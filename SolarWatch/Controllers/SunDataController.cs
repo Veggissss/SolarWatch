@@ -11,6 +11,7 @@ public class SunDataController(IConfiguration config, IHttpClientFactory httpCli
     : ControllerBase
 {
     private readonly HttpClient _http = httpClientFactory.CreateClient();
+    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions(){PropertyNameCaseInsensitive = true};
 
     [HttpGet]
     public async Task<IActionResult> Get(string city, string? date)
@@ -19,38 +20,47 @@ public class SunDataController(IConfiguration config, IHttpClientFactory httpCli
         {
             return Problem("Invalid date", statusCode: 400);
         }
-        
-        var apiKey = config["OPENWEATHERMAP_API"];
-        if (string.IsNullOrWhiteSpace(apiKey))
-            return Problem("Missing OPENWEATHERMAP_API configuration value!", statusCode: 500);
 
-        var jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        var cityLocationUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={city}&appid={apiKey}";
-        var cityLocationResponse = await _http.GetStringAsync(cityLocationUrl);
-        var cityLocations = JsonSerializer.Deserialize<OpenWeatherDTO[]>(cityLocationResponse, jsonOptions);
-        if (cityLocations == null || cityLocations.Length == 0)
+        var cityLocation = await GetCityCoordinates(city);
+        if (cityLocation == null)
         {
             return Problem("City not found", statusCode: 404);
         }
 
-        var cityLocation = cityLocations[0];
+        var sunData = await GetSunData(cityLocation.Lat, cityLocation.Lon, date);
+        if (sunData == null)
+        {
+            return Problem("Invalid sunset response", statusCode: 500);
+        }
 
-        var sunsetUrl =
-            $"https://api.sunrise-sunset.org/json?lat={cityLocation.Lat}&lng={cityLocation.Lon}&date={date}";
-        var sunsetResponse = await _http.GetStringAsync(sunsetUrl);
-        var sunsetData = JsonSerializer.Deserialize<SunDataResponseDTO>(sunsetResponse, jsonOptions);
-
-        return sunsetData?.Results == null
-            ? Problem("Invalid sunset response", statusCode: 500)
-            : Ok(sunsetData.Results);
+        return Ok(sunData);
     }
 
+    private async Task<OpenWeatherDTO?> GetCityCoordinates(string city)
+    {
+        var apiKey = config["OPENWEATHERMAP_API"];
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            return null;
+        }
 
-    bool IsValidDate(string input)
+        var cityLocationUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={city}&appid={apiKey}";
+        var cityLocationResponse = await _http.GetStringAsync(cityLocationUrl);
+        var cityLocations = JsonSerializer.Deserialize<OpenWeatherDTO[]>(cityLocationResponse, _jsonOptions);
+        
+        return cityLocations != null && cityLocations.Length > 0 ? cityLocations[0] : null;
+    }
+
+    private async Task<SunDataDTO?> GetSunData(float lat, float lon, string? date)
+    {
+        var sunsetUrl = $"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}";
+        var sunsetResponse = await _http.GetStringAsync(sunsetUrl);
+        var sunsetData = JsonSerializer.Deserialize<SunDataResponseDTO>(sunsetResponse, _jsonOptions);
+
+        return sunsetData?.Results;
+    }
+
+    private bool IsValidDate(string input)
     {
         return DateTime.TryParseExact(
             input,
