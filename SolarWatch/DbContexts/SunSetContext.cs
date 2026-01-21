@@ -3,7 +3,7 @@ using SolarWatch.Models;
 
 namespace SolarWatch;
 
-public class SunDataContext(IConfiguration config) : DbContext
+public class SunSetContext(IConfiguration config) : DbContext
 {
     public DbSet<City> Cities { get; set; }
     public DbSet<SunData> SunDatas { get; set; }
