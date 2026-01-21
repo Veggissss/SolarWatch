@@ -2,18 +2,21 @@ namespace SolarWatch.Models;
 
 public class City
 {
-    private string _name;
-    private float _longitude;
-    private float _latitude;
-    private string _state;
-    private string _country;
+    private string Name { get; }
+    private float Longitude { get; }
+    private float Latitude { get; }
+    private string State { get; }
+    private string Country { get; }
 
-    public City(string name, float longitude, float latitude, string state, string country)
+    private List<SunData> SunData { get; }
+
+    public City(string name, float longitude, float latitude, string state, string country, List<SunData> sunData)
     {
-        _name = name;
-        _longitude = longitude;
-        _latitude = latitude;
-        _state = state;
-        _country = country;
+        Name = name;
+        Longitude = longitude;
+        Latitude = latitude;
+        State = state;
+        Country = country;
+        SunData = sunData;
     }
 }
