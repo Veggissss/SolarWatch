@@ -2,15 +2,23 @@ namespace SolarWatch.Models;
 
 public class SunData
 {
-    private string Sunrise { get; }
-    private string Sunset { get; }
+    public int Id { get; set; }
+    public string Sunrise { get; set; }
+    public string Sunset { get; set; }
+    public string Date { get; set; }
 
-    private City City { get; }
-    
-    public SunData(string sunrise, string sunset, City city)
+    public int CityId { get; set; }
+    public City City { get; set; }
+
+    public SunData()
+    {
+    }
+
+    public SunData(string sunrise, string sunset, string date, City city)
     {
         Sunrise = sunrise;
         Sunset = sunset;
+        Date = date;
         City = city;
     }
 }

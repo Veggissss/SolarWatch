@@ -1,4 +1,6 @@
 using dotenv.net;
+using SolarWatch;
+using SolarWatch.Repositories;
 
 // Load API keys
 DotEnv.Load();
@@ -11,6 +13,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<SunSetContext>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<ISunDataRepository, SunDataRepository>();
 
 var app = builder.Build();
 

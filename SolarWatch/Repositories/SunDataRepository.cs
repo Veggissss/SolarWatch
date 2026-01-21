@@ -12,7 +12,7 @@ public class SunDataRepository(SunSetContext context) : ISunDataRepository
 
     public IEnumerable<SunData> ReadAll()
     {
-        return context.SunDatas.ToList();
+        return context.SunDatas;
     }
 
     public SunData? Read(int id)

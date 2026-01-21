@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SolarWatch.DTOs;
 using Moq.Protected;
 using System.Net;
+using SolarWatch.Repositories;
 
 namespace SolarWatchTest;
 
@@ -15,6 +16,8 @@ public class SunDataControllerTests
     private Mock<IConfiguration> _mockConfig = null!;
     private Mock<IHttpClientFactory> _mockHttpClientFactory = null!;
     private Mock<HttpMessageHandler> _mockHttpMessageHandler = null!;
+    private Mock<ISunDataRepository> _mockSunDataRepository = null!;
+    private Mock<ICityRepository> _mockCityRepository = null!;
 
     [SetUp]
     public void Setup()
@@ -24,11 +27,13 @@ public class SunDataControllerTests
 
         _mockHttpClientFactory = new Mock<IHttpClientFactory>();
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+        _mockSunDataRepository = new Mock<ISunDataRepository>();
+        _mockCityRepository = new Mock<ICityRepository>();
 
         var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        _controller = new SunDataController(_mockConfig.Object, _mockHttpClientFactory.Object);
+        _controller = new SunDataController(_mockConfig.Object, _mockHttpClientFactory.Object, _mockSunDataRepository.Object, _mockCityRepository.Object);
     }
 
     [Test]

@@ -1,22 +1,33 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SolarWatch.Models;
 
 public class City
 {
-    private string Name { get; }
-    private float Longitude { get; }
-    private float Latitude { get; }
-    private string State { get; }
-    private string Country { get; }
+    public int Id { get; set; }
+    [MaxLength(200)] public string Name { get; set; }
+    public float Latitude { get; set; }
+    public float Longitude { get; set; }
 
-    private List<SunData> SunData { get; }
+    [MaxLength(200)] public string Country { get; set; }
+    [MaxLength(200)] public string? State { get; set; }
 
-    public City(string name, float longitude, float latitude, string state, string country, List<SunData> sunData)
+    public List<SunData> SunData { get; }
+
+    public City()
+    {
+        Name = string.Empty;
+        Country = string.Empty;
+        SunData = [];
+    }
+
+    public City(string name, float latitude, float longitude, string? state, string country)
     {
         Name = name;
         Longitude = longitude;
         Latitude = latitude;
         State = state;
         Country = country;
-        SunData = sunData;
+        SunData = [];
     }
 }

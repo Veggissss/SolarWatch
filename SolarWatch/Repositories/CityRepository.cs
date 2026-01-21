@@ -12,7 +12,7 @@ public class CityRepository(SunSetContext context) : ICityRepository
 
     public IEnumerable<City> ReadAll()
     {
-        return context.Cities.ToList();
+        return context.Cities;
     }
 
     public City? Read(int id)
