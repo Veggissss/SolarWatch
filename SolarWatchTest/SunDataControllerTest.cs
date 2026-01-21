@@ -1,39 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using SolarWatch.Controllers;
-using NUnit.Framework;
 using SolarWatch.DTOs;
-using Moq.Protected;
-using System.Net;
 using SolarWatch.Repositories;
+using SolarWatch.Services;
 
 namespace SolarWatchTest;
 
 public class SunDataControllerTests
 {
     private SunDataController _controller = null!;
-    private Mock<IConfiguration> _mockConfig = null!;
-    private Mock<IHttpClientFactory> _mockHttpClientFactory = null!;
-    private Mock<HttpMessageHandler> _mockHttpMessageHandler = null!;
+
+    private Mock<ICityLocationService> _mockCityLocationService = null!;
+    private Mock<ISunDataService> _mockSunDataService = null!;
+    private DateService _mockDateService = null!;
+
     private Mock<ISunDataRepository> _mockSunDataRepository = null!;
     private Mock<ICityRepository> _mockCityRepository = null!;
+
 
     [SetUp]
     public void Setup()
     {
-        _mockConfig = new Mock<IConfiguration>();
-        _mockConfig.Setup(c => c["OPENWEATHERMAP_API"]).Returns("fake_api_key");
-
-        _mockHttpClientFactory = new Mock<IHttpClientFactory>();
-        _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+        _mockDateService = new DateService();
+        _mockCityLocationService = new Mock<ICityLocationService>();
+        _mockSunDataService = new Mock<ISunDataService>();
+        
         _mockSunDataRepository = new Mock<ISunDataRepository>();
         _mockCityRepository = new Mock<ICityRepository>();
 
-        var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
-
-        _controller = new SunDataController(_mockConfig.Object, _mockHttpClientFactory.Object, _mockSunDataRepository.Object, _mockCityRepository.Object);
+        _controller = new SunDataController(_mockDateService, _mockCityLocationService.Object,
+            _mockSunDataService.Object, _mockSunDataRepository.Object, _mockCityRepository.Object);
     }
 
     [Test]
@@ -50,37 +47,23 @@ public class SunDataControllerTests
     [Test]
     public async Task Get_Request()
     {
-        // Mock OpenWeather API response
-        var openWeatherResponse = new HttpResponseMessage
+        // Mock city location service response
+        var cityLocationDto = new CityLocationDTO
         {
-            StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(@"[{""name"":""Bergen"",""country"":""NO"",""lat"":60.3913,""lon"":5.3221}]")
+            Name = "Bergen",
+            Country = "NO",
+            Lat = 60.3913f,
+            Lon = 5.3221f
         };
+        _mockCityLocationService
+            .Setup(s => s.GetCityLocation("Bergen"))
+            .ReturnsAsync(cityLocationDto);
 
-        // Mock sunrise-sunset API response
-        var sunDataResponse = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(@"{""results"":{""sunrise"":""7:40:19 AM"",""sunset"":""3:24:16 PM""}}")
-        };
-
-        _mockHttpMessageHandler
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri!.ToString().Contains("openweathermap")),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(openWeatherResponse);
-
-        _mockHttpMessageHandler
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri!.ToString().Contains("sunrise-sunset")),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(sunDataResponse);
+        // Mock sun data service response
+        var sunDataDto = new SunDataDTO("7:40:19 AM", "3:24:16 PM");
+        _mockSunDataService
+            .Setup(s => s.GetSunData(60.3913f, 5.3221f, "2025-12-24"))
+            .ReturnsAsync(sunDataDto);
 
         const string validDate = "2025-12-24";
         var result = await _controller.Get("Bergen", validDate);
@@ -93,5 +76,22 @@ public class SunDataControllerTests
         var sunData = (SunDataDTO)okResult.Value;
         Assert.That(sunData.Sunrise, Is.EqualTo("7:40:19 AM"));
         Assert.That(sunData.Sunset, Is.EqualTo("3:24:16 PM"));
+    }
+
+    [Test]
+    public async Task Get_WithNonexistentCity_ReturnsNotFound()
+    {
+        // Mock city location service to return null for nonexistent city
+        _mockCityLocationService
+            .Setup(s => s.GetCityLocation("NonexistentCity"))
+            .ReturnsAsync((CityLocationDTO?)null);
+
+        const string validDate = "2025-12-24";
+        var result = await _controller.Get("NonexistentCity", validDate);
+        Console.WriteLine(result);
+
+        Assert.That(result, Is.TypeOf<ObjectResult>());
+        var notFoundResult = (ObjectResult)result;
+        Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
     }
 }

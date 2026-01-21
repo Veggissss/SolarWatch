@@ -1,6 +1,7 @@
 using dotenv.net;
 using SolarWatch;
 using SolarWatch.Repositories;
+using SolarWatch.Services;
 
 // Load API keys
 DotEnv.Load();
@@ -15,8 +16,13 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<SunSetContext>();
+
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<ISunDataRepository, SunDataRepository>();
+
+builder.Services.AddScoped<IDateService, DateService>();
+builder.Services.AddScoped<ICityLocationService, CityLocationService>();
+builder.Services.AddScoped<ISunDataService, SunDataService>();
 
 var app = builder.Build();
 

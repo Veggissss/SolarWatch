@@ -1,6 +1,6 @@
 namespace SolarWatch.DTOs;
 
-public class OpenWeatherDTO
+public class CityLocationDTO
 {
     public string Name { get; set; }
     public string Country { get; set; }
