@@ -1,13 +1,13 @@
 using System.Text.Json;
 using SolarWatch.DTOs;
 
-namespace SolarWatch.Services;
+namespace SolarWatch.DAOs;
 
-public class SunDataService(IHttpClientFactory httpClientFactory) : ISunDataService
+public class SunDataDao(IHttpClientFactory httpClientFactory) : ISunDataDao
 {
     private readonly HttpClient _http = httpClientFactory.CreateClient();
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-    
+
     public async Task<SunDataDTO?> GetSunData(float lat, float lon, string? date)
     {
         var sunsetUrl = $"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}";

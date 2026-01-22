@@ -1,8 +1,8 @@
 using SolarWatch.DTOs;
 
-namespace SolarWatch.Services;
+namespace SolarWatch.DAOs;
 
-public interface ISunDataService
+public interface ISunDataDao
 {
     Task<SunDataDTO?> GetSunData(float lat, float lon, string? date);
 }

@@ -1,8 +1,10 @@
+using SolarWatch.DAOs;
 using SolarWatch.Models;
 
 namespace SolarWatch.Repositories;
 
-public class CityRepository(SunSetContext context) : ICityRepository
+public class CityRepository(SunSetContext context, ICityLocationDao cityLocationDao)
+    : ICityRepository
 {
     public void Create(City entity)
     {
@@ -15,10 +17,6 @@ public class CityRepository(SunSetContext context) : ICityRepository
         return context.Cities;
     }
 
-    public City? Read(int id)
-    {
-        return context.Cities.Find(id);
-    }
 
     public void Update(City entity)
     {
@@ -33,7 +31,31 @@ public class CityRepository(SunSetContext context) : ICityRepository
         {
             return;
         }
+
         context.Cities.Remove(city);
         context.SaveChanges();
+    }
+    public City? Read(int id)
+    {
+        return context.Cities.Find(id);
+    }
+
+    public async Task<City?> GetByName(string name)
+    {
+        var savedCity = ReadAll().FirstOrDefault(cityObj => cityObj.Name == name);
+        if (savedCity != null)
+        {
+            return savedCity;
+        }
+        
+        var cityLocation = await cityLocationDao.GetCityLocation(name);
+        if (cityLocation == null)
+        {
+            return null;
+        }
+        savedCity = new City(cityLocation.Name, cityLocation.Lat, cityLocation.Lon, cityLocation.State,
+            cityLocation.Country);
+        Create(savedCity);
+        return savedCity;
     }
 }
