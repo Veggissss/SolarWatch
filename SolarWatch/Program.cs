@@ -1,5 +1,6 @@
 using dotenv.net;
 using SolarWatch;
+using SolarWatch.DAOs;
 using SolarWatch.Repositories;
 using SolarWatch.Services;
 
@@ -21,8 +22,8 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<ISunDataRepository, SunDataRepository>();
 
 builder.Services.AddScoped<IDateService, DateService>();
-builder.Services.AddScoped<ICityLocationService, CityLocationService>();
-builder.Services.AddScoped<ISunDataService, SunDataService>();
+builder.Services.AddScoped<ICityLocationDao, CityLocationDao>();
+builder.Services.AddScoped<ISunDataDao, SunDataDao>();
 
 var app = builder.Build();
 

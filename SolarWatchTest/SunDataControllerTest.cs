@@ -2,6 +2,7 @@
 using Moq;
 using SolarWatch.Controllers;
 using SolarWatch.DTOs;
+using SolarWatch.Models;
 using SolarWatch.Repositories;
 using SolarWatch.Services;
 
@@ -11,10 +12,7 @@ public class SunDataControllerTests
 {
     private SunDataController _controller = null!;
 
-    private Mock<ICityLocationService> _mockCityLocationService = null!;
-    private Mock<ISunDataService> _mockSunDataService = null!;
-    private DateService _mockDateService = null!;
-
+    private IDateService _dateService = null!;
     private Mock<ISunDataRepository> _mockSunDataRepository = null!;
     private Mock<ICityRepository> _mockCityRepository = null!;
 
@@ -22,15 +20,12 @@ public class SunDataControllerTests
     [SetUp]
     public void Setup()
     {
-        _mockDateService = new DateService();
-        _mockCityLocationService = new Mock<ICityLocationService>();
-        _mockSunDataService = new Mock<ISunDataService>();
+        _dateService = new DateService();
         
         _mockSunDataRepository = new Mock<ISunDataRepository>();
         _mockCityRepository = new Mock<ICityRepository>();
 
-        _controller = new SunDataController(_mockDateService, _mockCityLocationService.Object,
-            _mockSunDataService.Object, _mockSunDataRepository.Object, _mockCityRepository.Object);
+        _controller = new SunDataController(_dateService, _mockSunDataRepository.Object, _mockCityRepository.Object);
     }
 
     [Test]
@@ -47,23 +42,17 @@ public class SunDataControllerTests
     [Test]
     public async Task Get_Request()
     {
-        // Mock city location service response
-        var cityLocationDto = new CityLocationDTO
-        {
-            Name = "Bergen",
-            Country = "NO",
-            Lat = 60.3913f,
-            Lon = 5.3221f
-        };
-        _mockCityLocationService
-            .Setup(s => s.GetCityLocation("Bergen"))
-            .ReturnsAsync(cityLocationDto);
+        // Mock city repository response
+        var city = new City { Id = 1, Name = "Bergen" };
+        _mockCityRepository
+            .Setup(r => r.GetByName("Bergen"))
+            .ReturnsAsync(city);
 
-        // Mock sun data service response
-        var sunDataDto = new SunDataDTO("7:40:19 AM", "3:24:16 PM");
-        _mockSunDataService
-            .Setup(s => s.GetSunData(60.3913f, 5.3221f, "2025-12-24"))
-            .ReturnsAsync(sunDataDto);
+        // Mock sun data repository response
+        var sunData = new SunData { Id = 1, CityId = 1, Date = "2025-12-24", Sunrise = "7:40:19 AM", Sunset = "3:24:16 PM" };
+        _mockSunDataRepository
+            .Setup(r => r.GetByCityAndDate(city, "2025-12-24"))
+            .ReturnsAsync(sunData);
 
         const string validDate = "2025-12-24";
         var result = await _controller.Get("Bergen", validDate);
@@ -73,18 +62,18 @@ public class SunDataControllerTests
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
 
         Assert.That(okResult.Value, Is.TypeOf<SunDataDTO>());
-        var sunData = (SunDataDTO)okResult.Value;
-        Assert.That(sunData.Sunrise, Is.EqualTo("7:40:19 AM"));
-        Assert.That(sunData.Sunset, Is.EqualTo("3:24:16 PM"));
+        var sunDataDto = (SunDataDTO)okResult.Value;
+        Assert.That(sunDataDto.Sunrise, Is.EqualTo("7:40:19 AM"));
+        Assert.That(sunDataDto.Sunset, Is.EqualTo("3:24:16 PM"));
     }
 
     [Test]
     public async Task Get_WithNonexistentCity_ReturnsNotFound()
     {
-        // Mock city location service to return null for nonexistent city
-        _mockCityLocationService
-            .Setup(s => s.GetCityLocation("NonexistentCity"))
-            .ReturnsAsync((CityLocationDTO?)null);
+        // Mock city repository to return null for nonexistent city
+        _mockCityRepository
+            .Setup(r => r.GetByName("NonexistentCity"))
+            .ReturnsAsync((City?)null);
 
         const string validDate = "2025-12-24";
         var result = await _controller.Get("NonexistentCity", validDate);

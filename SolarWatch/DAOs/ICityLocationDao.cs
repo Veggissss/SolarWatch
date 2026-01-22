@@ -1,8 +1,8 @@
 using SolarWatch.DTOs;
 
-namespace SolarWatch.Services;
+namespace SolarWatch.DAOs;
 
-public interface ICityLocationService
+public interface ICityLocationDao
 {
     Task<CityLocationDTO?> GetCityLocation(string cityName);
 }

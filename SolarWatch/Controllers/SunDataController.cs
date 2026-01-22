@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.DTOs;
-using SolarWatch.Models;
 using SolarWatch.Repositories;
 using SolarWatch.Services;
 
@@ -10,8 +9,6 @@ namespace SolarWatch.Controllers;
 [Route("[controller]")]
 public class SunDataController(
     IDateService dateService,
-    ICityLocationService cityLocationService,
-    ISunDataService sunDataService,
     ISunDataRepository sunDataRepository,
     ICityRepository cityRepository)
     : ControllerBase
@@ -24,36 +21,17 @@ public class SunDataController(
             return Problem("Invalid date", statusCode: 400);
         }
 
-        var savedCity = cityRepository.ReadAll().FirstOrDefault(cityObj => cityObj.Name == city);
+        var savedCity = await cityRepository.GetByName(city);
         if (savedCity == null)
         {
-            var cityLocation = await cityLocationService.GetCityLocation(city);
-            if (cityLocation == null)
-            {
-                return Problem("City not found", statusCode: 404);
-            }
-
-            savedCity = new City(cityLocation.Name, cityLocation.Lat, cityLocation.Lon, cityLocation.State,
-                cityLocation.Country);
-            cityRepository.Create(savedCity);
+            return Problem("City not found", statusCode: 404);
         }
 
-        var savedSunData = sunDataRepository.ReadAll()
-            .FirstOrDefault(savedSunData => savedSunData.City.Name == city && savedSunData.Date == date);
+        var savedSunData = await sunDataRepository.GetByCityAndDate(savedCity, date);
         if (savedSunData == null)
         {
-            var sunData = await sunDataService.GetSunData(savedCity.Latitude, savedCity.Longitude, date);
-            if (sunData == null)
-            {
-                return Problem("Invalid sunset response", statusCode: 500);
-            }
-
-            savedSunData = new SunData(sunData.Sunrise, sunData.Sunset, date ?? dateService.GetDateToday(), savedCity);
-            sunDataRepository.Create(savedSunData);
+            return Problem("Invalid sunset response", statusCode: 500);
         }
-
-        savedCity.SunData.Add(savedSunData);
-        cityRepository.Update(savedCity);
 
         return Ok(new SunDataDTO(savedSunData.Sunrise, savedSunData.Sunset));
     }

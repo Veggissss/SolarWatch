@@ -1,9 +1,9 @@
 using System.Text.Json;
 using SolarWatch.DTOs;
 
-namespace SolarWatch.Services;
+namespace SolarWatch.DAOs;
 
-public class CityLocationService(IHttpClientFactory httpClientFactory, IConfiguration config) : ICityLocationService
+public class CityLocationDao(IHttpClientFactory httpClientFactory, IConfiguration config) : ICityLocationDao
 {
     private readonly HttpClient _http = httpClientFactory.CreateClient();
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
