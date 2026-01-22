@@ -16,6 +16,8 @@ public class SunDataController(
     [HttpGet]
     public async Task<IActionResult> Get(string city, string? date)
     {
+        city = string.Join(" ", city.ToLower().Split(' ').Select(word => char.ToUpper(word[0]) + word[1..]));
+        
         if (date != null && !dateService.IsValidDate(date))
         {
             return Problem("Invalid date", statusCode: 400);
