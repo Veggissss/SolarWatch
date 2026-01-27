@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.DTOs;
 using SolarWatch.Repositories;
@@ -6,13 +7,14 @@ using SolarWatch.Services;
 namespace SolarWatch.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class SunDataController(
     IDateService dateService,
     ISunDataRepository sunDataRepository,
     ICityRepository cityRepository)
     : ControllerBase
 {
+    [Authorize(Roles = "User,Admin")]
     [HttpGet]
     public async Task<IActionResult> Get(string city, string? date)
     {
