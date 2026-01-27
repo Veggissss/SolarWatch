@@ -10,13 +10,14 @@ using System.Text;
 public class JwtTokenService
 {
     private readonly JwtSettings _jwtSettings;
+    public const int JwtValidMinutes = 60;
 
     public JwtTokenService(IOptions<JwtSettings> jwtSettings)
     {
         _jwtSettings = jwtSettings.Value;
     }
 
-    public string CreateToken(string userId, string username, IEnumerable<string> roles, int validMinutes = 60)
+    public string CreateToken(string userId, string username, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -33,7 +34,7 @@ public class JwtTokenService
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(validMinutes),
+            expires: DateTime.UtcNow.AddMinutes(JwtValidMinutes),
             signingCredentials: credentials
         );
 

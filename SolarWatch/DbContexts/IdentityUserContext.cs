@@ -5,5 +5,5 @@ namespace SolarWatch;
 
 public class IdentityUserContext(IConfiguration config) : AbstractDbContext(config)
 {
-    DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 }
