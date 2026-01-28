@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="dotenv.net" Version="4.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
           <PrivateAssets>all</PrivateAssets>
@@ -26,6 +29,10 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Authentication\Schemes\LocalAuthIssuer.json" />
     </ItemGroup>
 
 </Project>
