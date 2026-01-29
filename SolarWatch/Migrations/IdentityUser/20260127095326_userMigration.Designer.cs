@@ -10,7 +10,7 @@ using SolarWatch;
 
 namespace SolarWatch.Migrations.IdentityUser
 {
-    [DbContext(typeof(IdentityUserContext))]
+    [DbContext(typeof(UserContext))]
     [Migration("20260127095326_userMigration")]
     partial class userMigration
     {

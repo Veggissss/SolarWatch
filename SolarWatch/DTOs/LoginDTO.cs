@@ -1,7 +1,7 @@
 namespace SolarWatch.DTOs;
 
-public class LoginDTO
+public class LoginDTO(string username, string password)
 {
-    public required string Username { get; init; }
-    public required string Password { get; init; }
+    public string Username { get; private set; } = username;
+    public string Password { get; private set; } = password;
 }
