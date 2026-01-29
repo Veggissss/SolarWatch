@@ -2,7 +2,7 @@ using SolarWatch.Models;
 
 namespace SolarWatch.Repositories;
 
-public class UserRepository(IdentityUserContext context) : IUserRepository
+public class UserRepository(UserContext context) : IUserRepository
 {
     public void Create(User entity)
     {
