@@ -55,12 +55,14 @@ builder.Services.AddAuthorizationBuilder()
 // Add services to the container.
 builder.Services.AddHttpClient();
 
+builder.Services.AddDbContext<SunSetContext>();
+builder.Services.AddDbContext<UserContext>();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<SunSetContext>();
-builder.Services.AddScoped<IdentityUserContext>();
+builder.Services.AddDbContext<SunSetContext>();
+builder.Services.AddDbContext<UserContext>();
 builder.Services.AddScoped<PasswordHasher>();
 
 builder.Services.AddScoped<ICityRepository, CityRepository>();

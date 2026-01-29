@@ -8,7 +8,7 @@ using SolarWatch.Services;
 
 namespace SolarWatchTest;
 
-public class SunDataControllerTests
+public class SunDataControllerTest
 {
     private SunDataController _controller = null!;
 
