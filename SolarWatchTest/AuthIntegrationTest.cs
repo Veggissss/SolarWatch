@@ -51,4 +51,13 @@ public class AuthIntegrationTest
         var response = await _client.GetAsync($"{Hostname}/api/sundata?city=oslo");
         Assert.That(response.StatusCode, Is.Not.EqualTo(HttpStatusCode.Unauthorized));
     }
+
+    [Test]
+    public async Task LoginWithInvalidCredentialsReturnsUnauthorized()
+    {
+        var authResponse = await _client.PostAsync($"{Hostname}/api/auth/login",
+            JsonContent.Create(new LoginDTO("admin", "wrongpassword")));
+        
+        Assert.That(authResponse.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+    }
 }
