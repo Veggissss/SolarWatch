@@ -19,7 +19,12 @@ public class CityLocationDao(IHttpClientFactory httpClientFactory, IConfiguratio
         var cityLocationUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}&appid={apiKey}";
         var cityLocationResponse = await _http.GetStringAsync(cityLocationUrl);
         var cityLocations = JsonSerializer.Deserialize<CityLocationDTO[]>(cityLocationResponse, _jsonOptions);
-
-        return cityLocations != null && cityLocations.Length > 0 ? cityLocations[0] : null;
+        if (cityLocations == null || cityLocations.Length == 0)
+        {
+            return null;
+        }
+        var city =  cityLocations[0];
+        city.Name = cityName;
+        return city;
     }
 }

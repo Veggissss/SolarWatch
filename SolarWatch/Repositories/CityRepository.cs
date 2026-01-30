@@ -35,6 +35,7 @@ public class CityRepository(SunSetContext context, ICityLocationDao cityLocation
         context.Cities.Remove(city);
         context.SaveChanges();
     }
+
     public City? Read(int id)
     {
         return context.Cities.Find(id);
@@ -42,19 +43,23 @@ public class CityRepository(SunSetContext context, ICityLocationDao cityLocation
 
     public async Task<City?> GetByName(string name)
     {
-        var savedCity = ReadAll().FirstOrDefault(cityObj => cityObj.Name == name);
+        var savedCity = ReadAll()
+            .FirstOrDefault(cityObj => string.Equals(cityObj.Name, name, StringComparison.OrdinalIgnoreCase));
         if (savedCity != null)
         {
             return savedCity;
         }
-        
+
         var cityLocation = await cityLocationDao.GetCityLocation(name);
         if (cityLocation == null)
         {
             return null;
         }
-        savedCity = new City(cityLocation.Name, cityLocation.Lat, cityLocation.Lon, cityLocation.State,
-            cityLocation.Country);
+
+        savedCity = new City(cityLocation.Name.Trim(),
+            cityLocation.Lat, cityLocation.Lon,
+            cityLocation.State, cityLocation.Country
+        );
         Create(savedCity);
         return savedCity;
     }

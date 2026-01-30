@@ -4,7 +4,8 @@ using SolarWatch.Services;
 
 namespace SolarWatch.Repositories;
 
-public class SunDataRepository(SunSetContext context, ISunDataDao sunDataDao, IDateService dateService) : ISunDataRepository
+public class SunDataRepository(SunSetContext context, ISunDataDao sunDataDao, IDateService dateService)
+    : ISunDataRepository
 {
     public void Create(SunData entity)
     {
@@ -35,18 +36,21 @@ public class SunDataRepository(SunSetContext context, ISunDataDao sunDataDao, ID
         {
             return;
         }
+
         context.Remove(sunData);
         context.SaveChanges();
     }
 
     public async Task<SunData?> GetByCityAndDate(City city, string? date)
     {
-        var savedSunData = ReadAll().FirstOrDefault(savedSunData => savedSunData.City.Name == city.Name && savedSunData.Date == date);
+        var savedSunData = ReadAll().FirstOrDefault(savedSunData =>
+            string.Equals(savedSunData.City.Name, city.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(savedSunData.Date, date, StringComparison.OrdinalIgnoreCase)
+        );
         if (savedSunData != null)
         {
             return savedSunData;
         }
-        
+
         var sunData = await sunDataDao.GetSunData(city.Latitude, city.Longitude, date);
         if (sunData == null)
         {
