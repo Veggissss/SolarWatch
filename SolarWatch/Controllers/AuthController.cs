@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using SolarWatch.DTOs;
 using SolarWatch.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace SolarWatch.Controllers;
 [Route("api/[controller]")]
 public class AuthController(JwtTokenService tokens, IUserRepository userRepository, PasswordHasher passwordHasher) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO req)
     {
@@ -30,9 +32,10 @@ public class AuthController(JwtTokenService tokens, IUserRepository userReposito
             Expires = DateTimeOffset.UtcNow.AddHours(JwtTokenService.JwtValidMinutes)
         });
 
-        return Ok();
+        return Ok(token);
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] LoginDTO req)
     {

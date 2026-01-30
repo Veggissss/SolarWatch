@@ -3,7 +3,7 @@ using SolarWatch.Models;
 
 namespace SolarWatch;
 
-public class IdentityUserContext(IConfiguration config) : AbstractDbContext(config)
+public class UserContext(IConfiguration config, DbContextOptions<UserContext> options) : AbstractDbContext(config, options)
 {
     public DbSet<User> Users { get; set; }
 }
