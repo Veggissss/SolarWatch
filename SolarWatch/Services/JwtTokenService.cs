@@ -10,7 +10,7 @@ using System.Text;
 public class JwtTokenService
 {
     private readonly JwtSettings _jwtSettings;
-    public const int JwtValidMinutes = 60;
+    private const int JwtValidMinutes = 60;
 
     public JwtTokenService(IOptions<JwtSettings> jwtSettings)
     {

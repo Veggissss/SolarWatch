@@ -24,14 +24,6 @@ public class AuthController(JwtTokenService tokens, IUserRepository userReposito
         }
 
         var token = tokens.CreateToken(user.Id.ToString(), req.Username, ["User"]);
-        Response.Cookies.Append("Authorization", token, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddHours(JwtTokenService.JwtValidMinutes)
-        });
-
         return Ok(token);
     }
 
@@ -48,6 +40,13 @@ public class AuthController(JwtTokenService tokens, IUserRepository userReposito
         var hashedPassword = passwordHasher.HashPassword(req.Password);
         var newUser = new User(req) { Password = hashedPassword };
         await Task.Run(() => userRepository.Create(newUser));
+        return Ok();
+    }
+
+    [HttpGet("protected")]
+    [Authorize(Roles = "Admin, User")]
+    public async Task<IActionResult> Protected()
+    {
         return Ok();
     }
 }

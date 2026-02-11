@@ -44,7 +44,7 @@ public class SunDataRepository(SunSetContext context, ISunDataDao sunDataDao, ID
     public async Task<SunData?> GetByCityAndDate(City city, string? date)
     {
         var savedSunData = ReadAll().FirstOrDefault(savedSunData =>
-            string.Equals(savedSunData.City.Name, city.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(savedSunData.Date, date, StringComparison.OrdinalIgnoreCase)
+            savedSunData.CityId == city.Id
         );
         if (savedSunData != null)
         {
