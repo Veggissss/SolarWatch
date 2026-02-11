@@ -27,7 +27,7 @@ export const handleLogout = () => {
     localStorage.removeItem("authToken");
 }
 
-const setRequestAuth = (requestInit: RequestInit) => {
+export const setRequestAuth = (requestInit: RequestInit) => {
     const token: string | null = localStorage.getItem("authToken");
     if (!token) {
         throw Error("Token not in localstorage!")

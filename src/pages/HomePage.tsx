@@ -1,12 +1,16 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router"
 
 export function HomePage() {
     const navigate = useNavigate()
-    navigate('/solar-watch', { replace: true })
+
+    useEffect(() => {
+        navigate('/solar-watch', { replace: true })
+    }, [navigate])
 
     return (
         <>
-            <h1>Begone!</h1>
+            { /* Redirect to solar-watch */}
         </>
     )
 }
