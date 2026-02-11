@@ -1,8 +1,8 @@
-import { API_ENDPOINT, LOGIN_PATH, PROTECTED_PATH } from "../config";
+import { LOGIN_PATH, PROTECTED_PATH } from "../config";
 import type { UserLogin } from "../types";
 
 export const performLogin = async (login: UserLogin) => {
-    const response = await fetch(API_ENDPOINT + LOGIN_PATH, {
+    const response = await fetch(LOGIN_PATH, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -11,8 +11,7 @@ export const performLogin = async (login: UserLogin) => {
     });
 
     if (response.ok) {
-        const { token } = await response.json();
-        console.log(token);
+        const token = await response.text();
         localStorage.setItem("authToken", token);
         return true;
     }
@@ -20,10 +19,22 @@ export const performLogin = async (login: UserLogin) => {
 };
 
 export const checkAuthorized = async () => {
-    const response = await fetch(API_ENDPOINT + PROTECTED_PATH);
+    const response = await fetch(PROTECTED_PATH, setRequestAuth({}));
     return response.ok;
 }
 
 export const handleLogout = () => {
     localStorage.removeItem("authToken");
+}
+
+const setRequestAuth = (requestInit: RequestInit) => {
+    const token: string | null = localStorage.getItem("authToken");
+    if (!token) {
+        throw Error("Token not in localstorage!")
+    }
+    requestInit.headers = {
+        "Authorization": `Bearer ${token}`
+    }
+
+    return requestInit;
 }
