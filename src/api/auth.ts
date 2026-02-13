@@ -11,6 +11,9 @@ export const performLogin = async (login: UserLogin) => {
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw Error("Invalid credentials");
+        }
         throw Error(await response.text());
     }
     const token = await response.text();
