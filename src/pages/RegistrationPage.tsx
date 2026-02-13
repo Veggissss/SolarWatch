@@ -4,6 +4,7 @@ import type { UserLogin } from "../types";
 import { LoginForm } from "../components/LoginForm";
 import { performLogin, performRegister } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
+import { getRandomMoji } from "../service/kaomoji";
 
 export function RegistrationPage() {
     const [userRegister, setUserRegister] = useState<UserLogin | null>(null)
@@ -18,10 +19,10 @@ export function RegistrationPage() {
             performLogin(userRegister).then(() => {
                 navitation("/solar-watch");
             }).catch((err: Error) => {
-                setError(err.message);
+                setError(`${err.message} ${getRandomMoji()}`);
             })
         }).catch((err: Error) => {
-            setError(err.message);
+            setError(`${err.message} ${getRandomMoji()}`);
         })
     }, [userRegister, navitation])
 
@@ -34,7 +35,7 @@ export function RegistrationPage() {
                 </div>
 
                 <div className="mt-8">
-                    <LoginForm onRegistrered={(user) => setUserRegister(user)} />
+                    <LoginForm onRegistrered={(user) => setUserRegister(user)} onError={(message) => setError(message)} />
                 </div>
 
                 <div className="text-center mt-4">

@@ -5,6 +5,7 @@ import { fetchSunData } from "../api/fetchData";
 import { useState } from "react";
 import type { SunData } from "../types";
 import { DisplayError } from "../components/DisplayError";
+import { getRandomMoji } from "../service/kaomoji";
 
 export function SolarWatchPage() {
     const [sunData, setSunData] = useState<SunData | null>(null)
@@ -12,7 +13,8 @@ export function SolarWatchPage() {
 
     const handleSearch = (cityName: string) => {
         if (!cityName || !cityName.trim()) {
-            setError("At least give me a city bro!");
+            setError(`At least give me a city bro! ${getRandomMoji()}`);
+            setSunData(null);
             return;
         }
 
@@ -20,7 +22,7 @@ export function SolarWatchPage() {
             setSunData(data);
         }
         ).catch((err: Error) => {
-            setError(JSON.parse(err.message)[""]);
+            setError(`${err.message} ${getRandomMoji()}`);
         })
     }
     return (

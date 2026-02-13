@@ -3,9 +3,10 @@ import type { UserLogin } from "../types";
 
 interface LoginProps {
     onRegistrered(user: UserLogin): void;
+    onError(message: string): void;
 }
 
-export function LoginForm({ onRegistrered }: LoginProps) {
+export function LoginForm({ onRegistrered, onError }: LoginProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -19,7 +20,7 @@ export function LoginForm({ onRegistrered }: LoginProps) {
 
         for (const validation of validations) {
             if (validation.condition) {
-                alert(validation.message);
+                onError(validation.message);
                 return;
             }
         }

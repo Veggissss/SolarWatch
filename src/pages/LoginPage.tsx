@@ -4,6 +4,7 @@ import type { UserLogin } from "../types";
 import { LoginForm } from "../components/LoginForm";
 import { performLogin } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
+import { getRandomMoji } from "../service/kaomoji";
 
 export function LoginPage() {
     const [userLogin, setUserLogin] = useState<UserLogin | null>(null);
@@ -17,7 +18,7 @@ export function LoginPage() {
         performLogin(userLogin).then(() => {
             navitation("/solar-watch");
         }).catch((err: Error) => {
-            setError(err.message);
+            setError(`${err.message} ${getRandomMoji()}`);
         });
     }, [userLogin, navitation])
 
@@ -29,7 +30,7 @@ export function LoginPage() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">Sign in to your account</p>
                 </div>
 
-                <LoginForm onRegistrered={(user) => setUserLogin(user)} />
+                <LoginForm onRegistrered={(user) => setUserLogin(user)} onError={(message) => setError(message)} />
 
                 <div className="text-center mt-4">
                     <button
