@@ -1,37 +1,47 @@
-import { useNavigate } from "react-router";
 import { SunDataForm } from "../components/SunDataForm";
+import { SunDataDisplay } from "../components/SunDataDisplay";
+import { LogoutButton } from "../components/LogoutButton";
 import { fetchSunData } from "../api/fetchData";
 import { useState } from "react";
 import type { SunData } from "../types";
+import { DisplayError } from "../components/DisplayError";
 
 export function SolarWatchPage() {
-    const navigate = useNavigate();
     const [sunData, setSunData] = useState<SunData | null>(null)
+    const [error, setError] = useState("");
 
     const handleSearch = (cityName: string) => {
+        if (!cityName || !cityName.trim()) {
+            setError("At least give me a city bro!");
+            return;
+        }
+
         fetchSunData(cityName).then(data => {
             setSunData(data);
         }
-        ).catch(() => {
-            console.log("Could not get sundata");
+        ).catch((err: Error) => {
+            setError(JSON.parse(err.message)[""]);
         })
     }
     return (
-        <>
-            <h1>Solar Watch</h1>
-            <SunDataForm onSearch={handleSearch} />
-            <br />
-            {sunData ? <>
-                <p>Sunrise: {sunData.sunrise}</p>
-                <p>Sunset: {sunData.sunset}</p>
-            </> : <></>}
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto">
+                <div className="text-center mb-10">
+                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">Solar Watch</h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-300">Check sunrise and sunset times for any city</p>
+                </div>
 
-            <div style={{ paddingTop: 100 }}>
-                <button onClick={() => {
-                    sessionStorage.removeItem("authToken");
-                    navigate('/login', { replace: true })
-                }}>Log out!</button>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+                    <SunDataForm onSearch={handleSearch} />
+                </div>
+
+                {sunData && <SunDataDisplay data={sunData} />}
+
+                <div className="flex justify-center mt-12">
+                    <LogoutButton />
+                </div>
+                <DisplayError error={error} />
             </div>
-        </>
+        </div>
     )
 }
