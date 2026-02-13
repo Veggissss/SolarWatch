@@ -15,7 +15,7 @@ function App() {
         <Route path='/solar-watch' element={<SolarWatchPage />}></Route>
       </Route>
       <Route path='/login' element={<LoginPage />}></Route>
-      <Route path='/registration' element={<RegistrationPage />}></Route>
+      <Route path='/register' element={<RegistrationPage />}></Route>
     </Routes>
   )
 }
