@@ -5,7 +5,7 @@ import { fetchSunData } from "../api/fetchData";
 import { useState } from "react";
 import type { SunData } from "../types";
 import { DisplayError } from "../components/DisplayError";
-import { getRandomMoji } from "../service/kaomoji";
+import { getRandomMoji } from "../service/kaoMoji";
 
 export function SolarWatchPage() {
     const [sunData, setSunData] = useState<SunData | null>(null)
@@ -25,6 +25,11 @@ export function SolarWatchPage() {
             setError(`${err.message} ${getRandomMoji()}`);
         })
     }
+
+    const handleError = (message: string) => {
+        setError(message);
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
@@ -34,7 +39,7 @@ export function SolarWatchPage() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-                    <SunDataForm onSearch={handleSearch} />
+                    <SunDataForm onSearch={handleSearch} onError={handleError} />
                 </div>
 
                 {sunData && <SunDataDisplay data={sunData} />}
