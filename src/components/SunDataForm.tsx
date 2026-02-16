@@ -57,7 +57,7 @@ export function SunDataForm({ onSearch, onError }: SunDataFormProps) {
                     />
 
                     {cities.length > 0 && <ol className="absolute w-full border bg-white dark:bg-gray-700  dark:text-white z-10 px-4 py-2 border-gray-300 rounded-lg outline-none transition-all">
-                        {cities.map(city => (<li onClick={(event) => handleSuggestionClick(event)} className="hover:text-indigo-500" key={city.name}>{city.name}</li>))}
+                        {cities.map(city => (<li onClick={(event) => handleSuggestionClick(event)} className="hover:text-indigo-500 cursor-pointer" key={city.name}>{city.name}</li>))}
                     </ol>}
                 </div>
                 <button
