@@ -1,0 +1,6 @@
+@SolarWatch_HostAddress = http://localhost:5114
+
+GET {{SolarWatch_HostAddress}}/sundata?city=Bergen&date=2026-01-27/
+Accept: application/json
+
+###
