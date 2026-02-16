@@ -3,7 +3,7 @@ using SolarWatch.Models;
 
 namespace SolarWatch.Repositories;
 
-public class CityRepository(SunSetContext context, ICityLocationDao cityLocationDao)
+public class CityRepository(SolarWatchDbContext context, ICityLocationDao cityLocationDao)
     : ICityRepository
 {
     public void Create(City entity)
