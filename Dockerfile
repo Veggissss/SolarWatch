@@ -1,4 +1,4 @@
-FROM node:24-alpine/node
+FROM node:24-alpine
 WORKDIR /app
 ENV APP_PORT=4770
 
