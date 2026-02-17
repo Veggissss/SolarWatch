@@ -29,6 +29,21 @@ namespace SolarWatch.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Password = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SunDatas",
                 columns: table => new
                 {
@@ -61,6 +76,9 @@ namespace SolarWatch.Migrations
         {
             migrationBuilder.DropTable(
                 name: "SunDatas");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Cities");

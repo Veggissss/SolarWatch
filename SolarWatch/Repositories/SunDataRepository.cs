@@ -4,7 +4,7 @@ using SolarWatch.Services;
 
 namespace SolarWatch.Repositories;
 
-public class SunDataRepository(SunSetContext context, ISunDataDao sunDataDao, IDateService dateService)
+public class SunDataRepository(SolarWatchDbContext context, ISunDataDao sunDataDao, IDateService dateService)
     : ISunDataRepository
 {
     public void Create(SunData entity)
