@@ -79,16 +79,25 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<SolarWatchDbContext>();
-    var services = scope.ServiceProvider;
     try
     {
-        Console.WriteLine("Applying Database Migrations...");
-        dbContext.Database.Migrate();
-        Console.WriteLine("Database Migrations Applied Successfully.");
-        var passwordHasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
-        var hashedPassword = passwordHasher.HashPassword(builder.Configuration["Admin__Password"] ?? throw new MissingMemberException("Missing Admin__Password env var."));
-        dbContext.Users.Add(new User(new LoginDTO(builder.Configuration["Admin__Username"] ?? throw new MissingMemberException("Missing Admin__Username env var."), hashedPassword)) { IsAdmin = true });
-        dbContext.SaveChanges();
+        if (dbContext.Database.IsRelational())
+        {
+            Console.WriteLine("Applying Database Migrations...");
+            dbContext.Database.Migrate();
+            Console.WriteLine("Database Migrations Applied Successfully.");
+        }
+        var adminUsername = builder.Configuration["Admin__Username"];
+        if (!string.IsNullOrWhiteSpace(adminUsername)
+            && !dbContext.Users.Any(user => user.Username == adminUsername))
+        {
+            var passwordHasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
+            var adminPassword = builder.Configuration["Admin__Password"]
+                                ?? throw new MissingMemberException("Missing Admin__Password env var.");
+            var hashedPassword = passwordHasher.HashPassword(adminPassword);
+            dbContext.Users.Add(new User(new LoginDTO(adminUsername, hashedPassword)) { IsAdmin = true });
+            dbContext.SaveChanges();
+        }
     }
     catch (Exception ex)
     {
