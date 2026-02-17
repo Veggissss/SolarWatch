@@ -17,13 +17,14 @@ public class AuthController(JwtTokenService tokens, IUserRepository userReposito
     {
         var user = await Task.Run(() =>
             userRepository.ReadAll().FirstOrDefault(x => x.Username == req.Username));
-        
+
         if (user == null || !passwordHasher.VerifyPassword(req.Password, user.Password))
         {
             return Unauthorized();
         }
 
-        var token = tokens.CreateToken(user.Id.ToString(), req.Username, ["User"]);
+        var role = user.IsAdmin ?  "Admin" : "User";
+        var token = tokens.CreateToken(user.Id.ToString(), req.Username, [role]);
         return Ok(token);
     }
 

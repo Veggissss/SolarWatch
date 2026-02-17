@@ -2,10 +2,13 @@ using System.Text;
 using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SolarWatch;
 using SolarWatch.Configuration;
 using SolarWatch.DAOs;
+using SolarWatch.DTOs;
+using SolarWatch.Models;
 using SolarWatch.Repositories;
 using SolarWatch.Services;
 
@@ -72,6 +75,27 @@ builder.Services.AddScoped<ICityLocationDao, CityLocationDao>();
 builder.Services.AddScoped<ISunDataDao, SunDataDao>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SolarWatchDbContext>();
+    var services = scope.ServiceProvider;
+    try
+    {
+        Console.WriteLine("Applying Database Migrations...");
+        dbContext.Database.Migrate();
+        Console.WriteLine("Database Migrations Applied Successfully.");
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
+        var hashedPassword = passwordHasher.HashPassword(builder.Configuration["Admin__Password"] ?? throw new MissingMemberException("Missing Admin__Password env var."));
+        dbContext.Users.Add(new User(new LoginDTO(builder.Configuration["Admin__Username"] ?? throw new MissingMemberException("Missing Admin__Username env var."), hashedPassword)) { IsAdmin = true });
+        dbContext.SaveChanges();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while migrating or seeding the database: {ex.Message}");
+        throw;
+    }
+}
 
 //app.UseCors();
 app.UseAuthentication();
