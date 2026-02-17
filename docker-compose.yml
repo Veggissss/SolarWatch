@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: solarwatch-postgres
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-solarwatch}
+      POSTGRES_USER: ${DB_USERNAME:-john}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME:-john} -d ${DB_NAME:-solarwatch}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ghcr.io/veggissss/solarwatch/backend:master
+    container_name: solarwatch-backend
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: ghcr.io/veggissss/solarwatch/frontend:master
+    container_name: solarwatch-frontend
+    ports:
+      - "4770:4770"
+    env_file: .env
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
