@@ -6,12 +6,20 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 4770,
+    strictPort: true,
+    host: true,
+    origin: "http://0.0.0.0:4770",
     proxy: {
       '/backend': {
-        target: 'http://localhost:5123',
+        target: 'https://solarwatch-api-csharp.onrender.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/backend/, '')
       }
     }
-  }
+  },
+  preview: {
+    port: 4770,
+    strictPort: true,
+  },
 })
