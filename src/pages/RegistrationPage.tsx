@@ -4,7 +4,7 @@ import type { UserLogin } from "../types";
 import { LoginForm } from "../components/LoginForm";
 import { performLogin, performRegister } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
-import { getRandomMoji } from "../service/kaomoji";
+import { getRandomMoji } from "../service/kaoMoji";
 
 export function RegistrationPage() {
     const [userRegister, setUserRegister] = useState<UserLogin | null>(null)
