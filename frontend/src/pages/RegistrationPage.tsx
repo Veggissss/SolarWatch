@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { UserLogin } from "../types";
-import { LoginForm } from "../components/LoginForm";
+import { AuthForm } from "../components/AuthForm";
 import { performLogin, performRegister } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
 import { getRandomMoji } from "../services/kaoMoji";
@@ -35,7 +35,7 @@ export function RegistrationPage() {
                 </div>
 
                 <div className="mt-8">
-                    <LoginForm onRegistrered={(user) => setUserRegister(user)} onError={(message) => setError(message)} />
+                    <AuthForm onRegistrered={(user) => setUserRegister(user)} onError={(message) => setError(message)} />
                 </div>
 
                 <div className="text-center mt-4">
