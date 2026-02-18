@@ -13,11 +13,6 @@ public class SolarWatchWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly string _dbName = Guid.NewGuid().ToString();
 
-    public SolarWatchWebApplicationFactory()
-    {
-        Environment.SetEnvironmentVariable("DB_NAME", _dbName);
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>

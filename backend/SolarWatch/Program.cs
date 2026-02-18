@@ -92,16 +92,19 @@ using (var scope = app.Services.CreateScope())
         {
             logger.LogWarning("Database is not relational.");
         }
-        var adminUsername = builder.Configuration["Admin__Username"];
-        if (!string.IsNullOrWhiteSpace(adminUsername)
-            && !dbContext.Users.Any(user => user.Username == adminUsername))
+
+        var adminSettings = builder.Configuration.GetSection("Admin").Get<AdminSettings>() ??
+                            throw new MissingMemberException("Missing Admin__Admin env var.");
+        if (!string.IsNullOrWhiteSpace(adminSettings.Username)
+            && !string.IsNullOrWhiteSpace(adminSettings.Password)
+            && !dbContext.Users.Any(user =>
+                user.Username == adminSettings.Username)
+           )
         {
             logger.LogInformation("Creating admin account.");
             var passwordHasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
-            var adminPassword = builder.Configuration["Admin__Password"]
-                                ?? throw new MissingMemberException("Missing Admin__Password env var.");
-            var hashedPassword = passwordHasher.HashPassword(adminPassword);
-            dbContext.Users.Add(new User(new LoginDTO(adminUsername, hashedPassword)) { IsAdmin = true });
+            var hashedPassword = passwordHasher.HashPassword(adminSettings.Password);
+            dbContext.Users.Add(new User(new LoginDTO(adminSettings.Username, hashedPassword)) { IsAdmin = true });
             dbContext.SaveChanges();
         }
     }

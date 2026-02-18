@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SolarWatch.Configuration;
 using SolarWatch.DTOs;
 
 namespace SolarWatch.DAOs;
@@ -13,13 +14,7 @@ public class CityLocationDao(
 
     public async Task<CityLocationDTO?> GetCityLocation(string cityName)
     {
-        var apiKey = config["OPENWEATHERMAP_API"];
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            logger.LogWarning("OpenWeatherMap API key is missing.");
-            return null;
-        }
-
+        var apiKey = config.GetSection("ExternalApiKeys").GetSection("OpenWeatherMap").Value ?? throw new MissingMemberException("ExternalApiKeys__OpenWeatherMap is missing!");
         var cityLocationUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}&appid={apiKey}";
         var response = await _http.GetAsync(cityLocationUrl);
 

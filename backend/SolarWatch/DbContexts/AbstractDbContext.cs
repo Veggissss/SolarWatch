@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SolarWatch.Configuration;
 
 namespace SolarWatch;
 
@@ -10,22 +11,10 @@ public abstract class AbstractDbContext(IConfiguration config, DbContextOptions 
         {
             return;
         }
-
-        var databaseName = config["DB_NAME"] ?? throw new Exception("Missing environment variable DB_NAME");
-
-        // Skip Postgres configuration if running in test mode (database name is a GUID)
-        if (!string.IsNullOrEmpty(databaseName) && Guid.TryParse(databaseName, out _))
-        {
-            return;
-        }
-
-        var databaseUsername =
-            config["DB_USERNAME"] ?? throw new Exception("Missing environment variable DB_USERNAME");
-        var databasePassword =
-            config["DB_PASSWORD"] ?? throw new Exception("Missing environment variable DB_PASSWORD");
-        var databaseHost = config["DB_HOST"] ?? "localhost";
-        var databasePort = config["DB_PORT"] ?? "5432";
+        var databaseSettings = config.GetSection("Database").Get<DatabaseSettings>() ??
+                               throw new Exception("Missing environment variable sections Database__*");
         optionsBuilder.UseNpgsql(
-            $"Host={databaseHost};Port={databasePort};Username={databaseUsername};Password={databasePassword};Database={databaseName}");
+            $"Host={databaseSettings.Host};Port={databaseSettings.Port};Username={databaseSettings.Username};Password={databaseSettings.Password};Database={databaseSettings.Name}"
+        );
     }
 }
