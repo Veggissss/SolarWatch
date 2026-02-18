@@ -7,7 +7,6 @@
     "dev": "vite",
     "dev:mock": "cross-env VITE_MOCKING_ENABLED=true vite",
     "build": "tsc -b && vite build",
-    "build:pages": "cross-env VITE_BASE_PATH=/SolarWatch/ && npm run build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",

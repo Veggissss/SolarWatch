@@ -11,17 +11,17 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
     plugins: [react(), tailwindcss()],
-    base: env.VITE_BASE_PATH,
+    base: env.VITE_BASE_PATH || "/",
 
     server: {
-      port: env.APP_PORT ? Number(env.APP_PORT) : 4770,
+      port: Number(env.APP_PORT) || 4770,
       strictPort: true,
       host: true,
-      origin: `http://0.0.0.0:${env.APP_PORT ? Number(env.APP_PORT) : 4770}`,
+      origin: `http://0.0.0.0:${Number(env.APP_PORT) || 4770}`,
 
       proxy: {
         '/backend': {
-          target: `${env.APP_BACKEND_API ? env.APP_BACKEND_API : "http://localhost:8080"}`,
+          target: env.APP_BACKEND_API || "http://localhost:8080",
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/backend/, '')
         }
@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     },
 
     preview: {
-      port: env.APP_PORT ? Number(env.APP_PORT) : 4770,
+      port: Number(env.APP_PORT) || 4770,
       strictPort: true,
       allowedHosts: env.APP_HOSTNAME ? [env.APP_HOSTNAME] : ["localhost"]
     },
