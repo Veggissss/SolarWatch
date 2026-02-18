@@ -5,7 +5,7 @@ import { fetchSunData } from "../api/fetchData";
 import { useState } from "react";
 import type { SunData } from "../types";
 import { DisplayError } from "../components/DisplayError";
-import { getRandomMoji } from "../service/kaoMoji";
+import { getRandomMoji } from "../services/kaoMoji";
 
 export function SolarWatchPage() {
     const [sunData, setSunData] = useState<SunData | null>(null)

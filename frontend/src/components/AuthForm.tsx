@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { UserLogin } from "../types";
 
-interface LoginProps {
+interface AuthFormProps {
     onRegistrered(user: UserLogin): void;
     onError(message: string): void;
 }
 
-export function LoginForm({ onRegistrered, onError }: LoginProps) {
+export function AuthForm({ onRegistrered, onError }: AuthFormProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { UserLogin } from "../types";
-import { LoginForm } from "../components/LoginForm";
+import { AuthForm } from "../components/AuthForm";
 import { performLogin } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
-import { getRandomMoji } from "../service/kaoMoji";
+import { getRandomMoji } from "../services/kaoMoji";
 
 export function LoginPage() {
     const [userLogin, setUserLogin] = useState<UserLogin | null>(null);
@@ -30,7 +30,7 @@ export function LoginPage() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">Sign in to your account</p>
                 </div>
 
-                <LoginForm onRegistrered={(user) => setUserLogin(user)} onError={(message) => setError(message)} />
+                <AuthForm onRegistrered={(user) => setUserLogin(user)} onError={(message) => setError(message)} />
 
                 <div className="text-center mt-4">
                     <button

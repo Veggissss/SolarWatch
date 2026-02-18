@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
     plugins: [react(), tailwindcss()],
+    base: env.VITE_BASE_PATH,
 
     server: {
       port: env.APP_PORT ? Number(env.APP_PORT) : 4770,
@@ -32,5 +33,8 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       allowedHosts: env.APP_HOSTNAME ? [env.APP_HOSTNAME] : ["localhost"]
     },
+    optimizeDeps: {
+      exclude: ["msw", "@mswjs/interceptors"]
+    }
   }
 })
