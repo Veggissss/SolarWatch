@@ -3,27 +3,41 @@ using SolarWatch.DTOs;
 
 namespace SolarWatch.DAOs;
 
-public class CityLocationDao(IHttpClientFactory httpClientFactory, IConfiguration config) : ICityLocationDao
+public class CityLocationDao(
+    IHttpClientFactory httpClientFactory,
+    IConfiguration config,
+    ILogger<CityLocationDao> logger) : ICityLocationDao
 {
     private readonly HttpClient _http = httpClientFactory.CreateClient();
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-    
+
     public async Task<CityLocationDTO?> GetCityLocation(string cityName)
     {
         var apiKey = config["OPENWEATHERMAP_API"];
         if (string.IsNullOrWhiteSpace(apiKey))
         {
+            logger.LogWarning("OpenWeatherMap API key is missing.");
             return null;
         }
 
         var cityLocationUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}&appid={apiKey}";
-        var cityLocationResponse = await _http.GetStringAsync(cityLocationUrl);
+        var response = await _http.GetAsync(cityLocationUrl);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            logger.LogWarning("Invalid OpenWeatherMap API key!");
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+        var cityLocationResponse = await response.Content.ReadAsStringAsync();
         var cityLocations = JsonSerializer.Deserialize<CityLocationDTO[]>(cityLocationResponse, _jsonOptions);
         if (cityLocations == null || cityLocations.Length == 0)
         {
+            logger.LogInformation("No city locations found for {CityName}.", cityName);
             return null;
         }
-        var city =  cityLocations[0];
+        var city = cityLocations[0];
         city.Name = cityName;
         return city;
     }

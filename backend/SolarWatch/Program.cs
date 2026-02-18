@@ -75,6 +75,7 @@ builder.Services.AddScoped<ICityLocationDao, CityLocationDao>();
 builder.Services.AddScoped<ISunDataDao, SunDataDao>();
 
 var app = builder.Build();
+var logger = app.Logger;
 
 using (var scope = app.Services.CreateScope())
 {
@@ -83,14 +84,19 @@ using (var scope = app.Services.CreateScope())
     {
         if (dbContext.Database.IsRelational())
         {
-            Console.WriteLine("Applying Database Migrations...");
+            logger.LogInformation("Applying database migrations...");
             dbContext.Database.Migrate();
-            Console.WriteLine("Database Migrations Applied Successfully.");
+            logger.LogInformation("Database migrations applied successfully.");
+        }
+        else
+        {
+            logger.LogWarning("Database is not relational.");
         }
         var adminUsername = builder.Configuration["Admin__Username"];
         if (!string.IsNullOrWhiteSpace(adminUsername)
             && !dbContext.Users.Any(user => user.Username == adminUsername))
         {
+            logger.LogInformation("Creating admin account.");
             var passwordHasher = scope.ServiceProvider.GetRequiredService<PasswordHasher>();
             var adminPassword = builder.Configuration["Admin__Password"]
                                 ?? throw new MissingMemberException("Missing Admin__Password env var.");
@@ -101,7 +107,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"An error occurred while migrating or seeding the database: {ex.Message}");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
         throw;
     }
 }
