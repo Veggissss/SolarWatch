@@ -4,7 +4,7 @@ import type { UserLogin } from "../types";
 import { LoginForm } from "../components/LoginForm";
 import { performLogin } from "../api/auth";
 import { DisplayError } from "../components/DisplayError";
-import { getRandomMoji } from "../service/kaoMoji";
+import { getRandomMoji } from "../services/kaoMoji";
 
 export function LoginPage() {
     const [userLogin, setUserLogin] = useState<UserLogin | null>(null);
