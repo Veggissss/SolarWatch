@@ -5,13 +5,20 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+
+  let basePath = "/";
+  const baseUrl = process.env.VITE_BASE_URL ?? '';
+  if (baseUrl.includes("github.io")) {
+    basePath = `/${baseUrl.split("/").pop()}/`;
+  }
+
   return {
     define: {
       // Provide an explicit app-level constant derived from an env var.
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
+    base: basePath,
     plugins: [react(), tailwindcss()],
-    base: env.VITE_BASE_PATH || "/",
 
     server: {
       port: Number(env.APP_PORT) || 4770,
