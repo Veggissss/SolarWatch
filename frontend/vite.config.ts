@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
     plugins: [react(), tailwindcss()],
+    base: env.VITE_BASE_PATH,
 
     server: {
       port: env.APP_PORT ? Number(env.APP_PORT) : 4770,
