@@ -32,5 +32,8 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       allowedHosts: env.APP_HOSTNAME ? [env.APP_HOSTNAME] : ["localhost"]
     },
+    optimizeDeps: {
+      exclude: ["msw", "@mswjs/interceptors"]
+    }
   }
 })

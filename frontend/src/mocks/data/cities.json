@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "London",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "country": "GB",
+        "state": "England",
+        "sunData": []
+    },
+    {
+        "id": 2,
+        "name": "Budapest",
+        "latitude": 47.4979,
+        "longitude": 19.0402,
+        "country": "HU",
+        "state": "Pest",
+        "sunData": []
+    }
+]
