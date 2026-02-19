@@ -1,13 +1,13 @@
 {
-  "name": "solarwatch-frontend-javascript-veggissss",
-  "private": true,
+  "name": "solarwatch",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:mock": "cross-env VITE_MOCKING_ENABLED=true vite",
     "build": "tsc -b && vite build",
-    "build:pages": "cross-env VITE_BASE_PATH=/SolarWatch/ npm run build",
+    "build:pages": "cross-env VITE_BASE_PATH=/SolarWatch/ cross-env VITE_MOCKING_ENABLED=true npm run build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
