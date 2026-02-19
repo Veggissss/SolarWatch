@@ -24,6 +24,7 @@ export function SunDataForm({ onSearch, onError }: SunDataFormProps) {
             return;
         }
         (searchInputElement.current as HTMLInputElement).value = cityName;
+        setCities([]);
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
