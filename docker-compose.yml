@@ -8,8 +8,8 @@ services:
       POSTGRES_DB: ${Database__Name:-solarwatch}
       POSTGRES_USER: ${Database__Username:-john}
       POSTGRES_PASSWORD: ${Database__Password:-123}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
@@ -17,6 +17,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   api:
     #image: ghcr.io/veggissss/solarwatch/backend:master
@@ -24,14 +26,17 @@ services:
       context: ./backend
       dockerfile: ./SolarWatch/Dockerfile
     container_name: solarwatch-backend
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     env_file: .env
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - frontend
+      - backend
 
   frontend:
     #image: ghcr.io/veggissss/solarwatch/frontend:master
@@ -44,6 +49,17 @@ services:
     env_file: .env
     depends_on:
       - api
+    networks:
+      - frontend
 
 volumes:
   postgres_data:
+
+networks:
+  frontend:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+  backend:
+    driver: bridge
+    external: false
