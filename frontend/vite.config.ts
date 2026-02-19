@@ -5,12 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-
+  const basePath = process.env.VITE_BASE_PATH || '/';
   return {
     define: {
       // Provide an explicit app-level constant derived from an env var.
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
+    base: basePath,
     plugins: [react(), tailwindcss()],
 
     server: {
