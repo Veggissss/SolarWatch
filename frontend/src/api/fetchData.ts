@@ -2,8 +2,12 @@ import { CITY_PATH, SUNDATA_PATH } from "../config"
 import type { City, SunData } from "../types";
 import { setRequestAuth } from "./auth";
 
-export const fetchSunData = async (cityName: string) => {
-    const response = await fetch(SUNDATA_PATH + `?city=${cityName}`, setRequestAuth({}))
+export const fetchSunData = async (cityName: string, date?: string) => {
+    let requestUrl = SUNDATA_PATH + `?city=${cityName}`;
+    if (date) {
+        requestUrl += `&date=${date}`;
+    }
+    const response = await fetch(requestUrl, setRequestAuth({}))
     if (!response.ok) {
         if (response.status === 404) {
             throw Error("City not found!");
