@@ -6,8 +6,10 @@ import { useState } from "react";
 import type { SunData } from "../types";
 import { DisplayError } from "../components/DisplayError";
 import { getRandomMoji } from "../services/kaoMoji";
+import { DatePicker } from "../components/DatePicker";
 
 export function SolarWatchPage() {
+    const [date, setDate] = useState("");
     const [sunData, setSunData] = useState<SunData | null>(null)
     const [error, setError] = useState("");
 
@@ -18,7 +20,7 @@ export function SolarWatchPage() {
             return;
         }
 
-        fetchSunData(cityName).then(data => {
+        fetchSunData(cityName, date.trim() || undefined).then(data => {
             setSunData(data);
         }
         ).catch((err: Error) => {
@@ -28,6 +30,10 @@ export function SolarWatchPage() {
 
     const handleError = (message: string) => {
         setError(message);
+    }
+
+    const handleDatePicked = (date: string) => {
+        setDate(date);
     }
 
     return (
@@ -40,6 +46,7 @@ export function SolarWatchPage() {
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
                     <SunDataForm onSearch={handleSearch} onError={handleError} />
+                    <DatePicker onSubmitDate={handleDatePicked} />
                 </div>
 
                 {sunData && <SunDataDisplay data={sunData} />}

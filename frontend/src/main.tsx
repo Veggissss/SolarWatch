@@ -9,7 +9,11 @@ async function enableMocking() {
 
   if (isMockingEnabled) {
     const { worker } = await import('./mocks/worker');
-    return worker.start();
+    return worker.start({
+      serviceWorker: {
+        url: `${import.meta.env.VITE_BASE_PATH || ''}/mockServiceWorker.js`
+      }
+    });
   }
 }
 
