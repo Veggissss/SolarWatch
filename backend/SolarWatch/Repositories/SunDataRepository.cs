@@ -43,8 +43,9 @@ public class SunDataRepository(SolarWatchDbContext context, ISunDataDao sunDataD
 
     public async Task<SunData?> GetByCityAndDate(City city, string? date)
     {
+        var queryDate = date ?? dateService.GetDateToday();
         var savedSunData = ReadAll().FirstOrDefault(savedSunData =>
-            savedSunData.CityId == city.Id
+            savedSunData.CityId == city.Id && queryDate == savedSunData.Date
         );
         if (savedSunData != null)
         {
