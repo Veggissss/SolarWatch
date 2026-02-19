@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   let basePath = "/";
-  const baseUrl = process.env.VITE_BASE_URL ?? '';
+  const baseUrl = process.env.VITE_BASE_URL || '';
   if (baseUrl.includes("github.io")) {
     basePath = `/${baseUrl.split("/").pop()}/`;
   }
